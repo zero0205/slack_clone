@@ -3,11 +3,23 @@ import axios from 'axios';
 import React, { FC, useCallback } from 'react';
 import { Redirect } from 'react-router';
 import useSWR from 'swr';
+import {
+  Channels,
+  Chats,
+  Header,
+  MenuScroll,
+  ProfileImg,
+  RightMenu,
+  WorkspaceName,
+  WorkspaceWrapper,
+  Workspaces,
+} from '@layouts/Workspace/styles';
+import gravatar from 'gravatar';
 
 const Workspace: FC = ({ children }) => {
-  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher,{
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     // 설정된 시간 동안 1번만 요청하고 나머지 같은 요청들은 받은 데이터, 즉 캐시된 것 그대로 사용
-    dedupingInterval: 10000,  
+    dedupingInterval: 10000,
   });
 
   const onLogout = useCallback((e) => {
@@ -30,7 +42,22 @@ const Workspace: FC = ({ children }) => {
   }
   return (
     <div>
+      <Header>
+        <RightMenu>
+          <span>
+            <ProfileImg src={gravatar.url(data.email, { s: '28px', d: 'retro' })} alt={data.nickname} />
+          </span>
+        </RightMenu>
+      </Header>
       <button onClick={onLogout}>로그아웃</button>
+      <WorkspaceWrapper>
+        <Workspaces>test</Workspaces>
+        <Channels>
+          <WorkspaceName>Sleact</WorkspaceName>
+          <MenuScroll>Menuscroll</MenuScroll>
+        </Channels>
+        <Chats>Chats</Chats>
+      </WorkspaceWrapper>
       {children}
     </div>
   );
