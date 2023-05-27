@@ -8,11 +8,13 @@ interface Props {
   closeButton?: boolean;
 }
 
-const Menu: FC<Props> = ({ children, style, onCloseModal, closeButton }) => {
+const Menu: FC<Props> = ({ children, style, show, onCloseModal, closeButton }) => {
   // 이벤트 버블링 막기
   const stopPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
+
+  if (!show) return null;
 
   return (
     <CreateMenu onClick={onCloseModal}>
