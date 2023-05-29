@@ -57,7 +57,7 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
     },
     [newChannel, revalidateChannel, setNewChannel, setShowCreateChannelModal, workspace],
   );
-  console.log(channelData);
+
   return (
     <Modal show={show} onCloseModal={onCloseModal}>
       <form onSubmit={onCreateChannel}>
