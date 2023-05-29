@@ -1,9 +1,9 @@
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { FC, VFC, useCallback, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch, useParams } from 'react-router';
 import useSWR from 'swr';
-import { IUser } from '@typings/db';
+import { IChannel, IUser } from '@typings/db';
 import {
   AddButton,
   Channels,
@@ -26,12 +26,12 @@ import { Link } from 'react-router-dom';
 import { Button, Input, Label } from '@pages/LogIn/styles';
 import useInput from '@hooks/useInput';
 import { toast } from 'react-toastify';
+import Menu from '@components/Menu';
+import Modal from '@components/Modal';
 import CreateChannelModal from '@components/CreateChannelModal';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
-const Menu = loadable(() => import('@components/Menu'));
-const Modal = loadable(() => import('@components/Modal'));
 
 const Workspace: VFC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -40,6 +40,9 @@ const Workspace: VFC = () => {
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
+
+  const { workspace } = useParams<{ workspace: string }>();
+
   const {
     data: userData,
     error,
@@ -48,6 +51,11 @@ const Workspace: VFC = () => {
     // 설정된 시간 동안 1번만 요청하고 나머지 같은 요청들은 받은 데이터, 즉 캐시된 것 그대로 사용
     dedupingInterval: 2000,
   });
+  // 로그인한 상태(즉 userData가 존재할 때)만 채널 데이터 가져옴. 로그인 안되어 있으면 null
+  const { data: channelData } = useSWR<IChannel[]>(
+    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+    fetcher,
+  );
 
   const onLogout = useCallback((e) => {
     axios
@@ -154,7 +162,7 @@ const Workspace: VFC = () => {
         <Workspaces>
           {userData?.Workspaces.map((ws) => {
             return (
-              <Link key={ws.id} to="/workspace/${}/channel/일반">
+              <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
               </Link>
             );
@@ -171,12 +179,15 @@ const Workspace: VFC = () => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
+            {channelData?.map((v) => (
+              <div>{v.name}</div>
+            ))}
           </MenuScroll>
         </Channels>
         <Chats>
           <Switch>
-            <Route path="/workspace/channel" component={Channel} />
-            <Route path="/workspace/dm" component={DirectMessage} />
+            <Route path="/workspace/:workspace/channel/:channel" component={Channel} />
+            <Route path="/workspace/:workspace/dm/:id" component={DirectMessage} />
           </Switch>
         </Chats>
       </WorkspaceWrapper>
@@ -193,7 +204,11 @@ const Workspace: VFC = () => {
           <Button type="submit">생성하기</Button>
         </form>
       </Modal>
-      <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal}></CreateChannelModal>
+      <CreateChannelModal
+        show={showCreateChannelModal}
+        onCloseModal={onCloseModal}
+        setShowCreateChannelModal={setShowCreateChannelModal}
+      />
     </div>
   );
 };
