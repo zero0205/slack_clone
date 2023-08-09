@@ -27,7 +27,7 @@ const LogIn = () => {
           },
         )
         .then((response) => {
-          mutate();
+          mutate(response.data);
         console.log("로그인 성공");
         })
         .catch((error) => {
