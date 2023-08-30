@@ -7,8 +7,8 @@ import { Link, Redirect } from 'react-router-dom';
 import useSWR from 'swr';
 
 const LogIn = () => {
-  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher,{
-    dedupingInterval:100000,    // 이 기간 내에는 서버에 다시 요청하지 않고 캐시에서 데이터를 불러옴
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
+    dedupingInterval: 100000, // 이 기간 내에는 서버에 다시 요청하지 않고 캐시에서 데이터를 불러옴
   });
 
   const [logInError, setLogInError] = useState(false);
@@ -28,7 +28,7 @@ const LogIn = () => {
         )
         .then((response) => {
           mutate(response.data);
-        console.log("로그인 성공");
+          console.log('로그인 성공');
         })
         .catch((error) => {
           setLogInError(error.response?.status === 401);
@@ -42,7 +42,7 @@ const LogIn = () => {
   }
 
   if (data) {
-    return <Redirect to="/workspace/channel" />;
+    return <Redirect to="/workspace/slack_clone/channel/일반" />;
   }
 
   // console.log(error, userData);

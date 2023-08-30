@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { Form,Error,Success, Label, Header, Input, LinkContainer, Button } from './styles';
-import useInput from "@hooks/useInput";
-import axios from "axios";
-import fetcher from "@utils/fetcher";
+import React, { useCallback, useState } from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { Form, Error, Success, Label, Header, Input, LinkContainer, Button } from './styles';
+import useInput from '@hooks/useInput';
+import axios from 'axios';
+import fetcher from '@utils/fetcher';
 import useSWR from 'swr';
 
 const SignUp = () => {
@@ -11,57 +11,67 @@ const SignUp = () => {
 
   const [email, onChangeEmail, setEmail] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
-  const [password, ,setPassword] = useInput('');
-  const [passwordCheck, ,setPasswordCheck] = useInput('');
+  const [password, , setPassword] = useInput('');
+  const [passwordCheck, , setPasswordCheck] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
   const [signUpError, setSignupError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-  const onChangePassword = useCallback((e)=>{
-    setPassword(e.target.value);
-    setMismatchError(e.target.value !== passwordCheck);
-  },[passwordCheck]);
+  const onChangePassword = useCallback(
+    (e) => {
+      setPassword(e.target.value);
+      setMismatchError(e.target.value !== passwordCheck);
+    },
+    [passwordCheck],
+  );
 
-  const onChangePasswordCheck = useCallback((e)=>{
-    setPasswordCheck(e.target.value);
-    setMismatchError(e.target.value !== password);
-  },[password]);
+  const onChangePasswordCheck = useCallback(
+    (e) => {
+      setPasswordCheck(e.target.value);
+      setMismatchError(e.target.value !== password);
+    },
+    [password],
+  );
 
-  const onSubmit = useCallback((e)=>{
-    e.preventDefault();
-    if(!mismatchError){
-      console.log("서버로 회원가입하기");
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!mismatchError) {
+        console.log('서버로 회원가입하기');
 
-      setSignupError('');
-      setSignUpSuccess(false);
+        setSignupError('');
+        setSignUpSuccess(false);
 
-      axios.post('http://localhost:3095/api/users',{
-        email,
-        nickname,
-        password,
-      })
-      .then((response)=>{
-        console.log(response);
-        setSignUpSuccess(true);
-      })
-      .catch((error)=>{
-        console.log(error.response);
-        setSignupError(error.response.data);
-      })
-      .finally(()=>{});
-    }
-  }, [email, nickname, password, passwordCheck]);
+        axios
+          .post('http://localhost:3095/api/users', {
+            email,
+            nickname,
+            password,
+          })
+          .then((response) => {
+            console.log(response);
+            setSignUpSuccess(true);
+          })
+          .catch((error) => {
+            console.log(error.response);
+            setSignupError(error.response.data);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck],
+  );
 
   if (data === undefined) {
     return <div>로딩중...</div>;
   }
 
   if (data) {
-    return <Redirect to="/workspace/channel" />;
+    return <Redirect to="/workspace/slack_clone/channel/일반" />;
   }
 
-    return(
-        <div id="container">
+  return (
+    <div id="container">
       <Header>Sleact</Header>
       <Form onSubmit={onSubmit}>
         <Label id="email-label">
@@ -96,7 +106,7 @@ const SignUp = () => {
           {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
           {!nickname && <Error>닉네임을 입력해주세요.</Error>}
           {signUpError && <Error>{signUpError}</Error>}
-           {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
+          {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
         </Label>
         <Button type="submit">회원가입</Button>
       </Form>
@@ -105,7 +115,7 @@ const SignUp = () => {
         <Link to="/login">로그인 하러가기</Link>
       </LinkContainer>
     </div>
-    )
-}
+  );
+};
 
 export default SignUp;
