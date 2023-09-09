@@ -1,5 +1,6 @@
 // import useSocket from '@hooks/useSocket';
 import { CollapseButton } from '@components/DMList/styles';
+// import useSocket from '@hooks/useSocket';
 import { IUser, IUserWithOnline } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { FC, useCallback, useEffect, useState } from 'react';
@@ -9,11 +10,11 @@ import useSWR from 'swr';
 
 const DMList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
-  const { data: userData, error, mutate } = useSWR<IUser>('/api/users', fetcher, {
+  const { data: userData, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const { data: memberData } = useSWR<IUserWithOnline[]>(
-    userData ? `/api/workspaces/${workspace}/members` : null,
+    userData ? `http://localhost:3095/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
 //   const [socket] = useSocket(workspace);
@@ -46,7 +47,7 @@ const DMList: FC = () => {
     <>
       <h2>
         <CollapseButton collapse={channelCollapse} onClick={toggleChannelCollapse}>
-        <i className="c-icon p-channel_sidebar__section_heading_expand c-icon--caret-right c-icon--inherit c-icon--inline" data-qa="channel-section-collapse" aria-hidden="true"></i>
+          <button>O</button>
         </CollapseButton>
         <span>Direct Messages</span>
       </h2>
