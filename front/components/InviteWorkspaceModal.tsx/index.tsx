@@ -1,7 +1,7 @@
 import Modal from '@components/Modal';
 import useInput from '@hooks/useInput';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { IUser } from '@typings/db';
+import { IChannel, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { FC, useCallback } from 'react';
@@ -12,14 +12,14 @@ import useSWR from 'swr';
 interface Props {
   show: boolean;
   onCloseModal: () => void;
-  setShowInviteChannelModal: (flag: boolean) => void;
+  setShowInviteWorkspaceModal: (flag: boolean) => void;
 }
-const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChannelModal }) => {
-  const { workspace, channel } = useParams<{ workspace: string; channel: string }>();
+const InviteWorkspaceModal: FC<Props> = ({ show, onCloseModal, setShowInviteWorkspaceModal }) => {
+  const { workspace } = useParams<{ workspace: string; channel: string }>();
   const [newMember, onChangeNewMember, setNewMember] = useInput('');
   const { data: userData } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
-  const { mutate } = useSWR<IUser[]>(
-    userData && channel ? `http://localhost:3095/api/workspaces/${workspace}/channels/${channel}/members` : null,
+  const { mutate: mutateMember } = useSWR<IChannel[]>(
+    userData ? `http://localhost:3095/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
 
@@ -30,12 +30,12 @@ const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChanne
         return;
       }
       axios
-        .post(`/api/workspaces/${workspace}/channels/${channel}/members`, {
+        .post(`http://localhost:3095/api/workspaces/${workspace}/members`, {
           email: newMember,
         })
         .then((response) => {
-          mutate(response.data, false);
-          setShowInviteChannelModal(false);
+          mutateMember(response.data, false);
+          setShowInviteWorkspaceModal(false);
           setNewMember('');
         })
         .catch((error) => {
@@ -43,15 +43,15 @@ const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChanne
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newMember],
+    [workspace, newMember],
   );
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>
       <form onSubmit={onInviteMember}>
         <Label id="member-label">
-          <span>채널 멤버 초대</span>
-          <Input id="member" value={newMember} onChange={onChangeNewMember} />
+          <span>이메일</span>
+          <Input id="member" type="email" value={newMember} onChange={onChangeNewMember} />
         </Label>
         <Button type="submit">초대하기</Button>
       </form>
@@ -59,4 +59,4 @@ const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChanne
   );
 };
 
-export default InviteChannelModal;
+export default InviteWorkspaceModal;

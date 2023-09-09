@@ -29,7 +29,11 @@ import useInput from '@hooks/useInput';
 import Modal from '@components/Modal';
 import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
+<<<<<<< HEAD
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
+=======
+import InviteWorkspaceModal from '@components/InviteWorkspaceModal.tsx';
+>>>>>>> 65b6bfb3feaddb731f1605fca667dee11cac97d4
 import InviteChannelModal from '@components/InviteChannelModal';
 
 const Channel = loadable(() => import('@pages/Channel'));
@@ -121,9 +125,13 @@ const Workspace: VFC = () => {
     setShowCreateChannelModal(true);
   }, []);
 
+<<<<<<< HEAD
   const onClickInviteWorkspace = useCallback(()=>{
 
   },[]);
+=======
+  const onClickInviteWorkspace = useCallback(() => {}, []);
+>>>>>>> 65b6bfb3feaddb731f1605fca667dee11cac97d4
 
   if (!userData) {
     return <Redirect to="/login" />;
