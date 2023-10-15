@@ -10,14 +10,18 @@ import useSWR from 'swr';
 
 const DMList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
-  const { data: userData, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher, {
+  const {
+    data: userData,
+    error,
+    mutate,
+  } = useSWR<IUser>('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const { data: memberData } = useSWR<IUserWithOnline[]>(
     userData ? `http://localhost:3095/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
-//   const [socket] = useSocket(workspace);
+  //   const [socket] = useSocket(workspace);
   const [channelCollapse, setChannelCollapse] = useState(false);
   const [onlineList, setOnlineList] = useState<number[]>([]);
 
@@ -30,24 +34,28 @@ const DMList: FC = () => {
     setOnlineList([]);
   }, [workspace]);
 
-//   useEffect(() => {
-//     socket?.on('onlineList', (data: number[]) => {
-//       setOnlineList(data);
-//     });
-//     // socket?.on('dm', onMessage);
-//     // console.log('socket on dm', socket?.hasListeners('dm'), socket);
-//     return () => {
-//       // socket?.off('dm', onMessage);
-//       // console.log('socket off dm', socket?.hasListeners('dm'));
-//       socket?.off('onlineList');
-//     };
-//   }, [socket]);
+  //   useEffect(() => {
+  //     socket?.on('onlineList', (data: number[]) => {
+  //       setOnlineList(data);
+  //     });
+  //     // socket?.on('dm', onMessage);
+  //     // console.log('socket on dm', socket?.hasListeners('dm'), socket);
+  //     return () => {
+  //       // socket?.off('dm', onMessage);
+  //       // console.log('socket off dm', socket?.hasListeners('dm'));
+  //       socket?.off('onlineList');
+  //     };
+  //   }, [socket]);
 
   return (
     <>
       <h2>
         <CollapseButton collapse={channelCollapse} onClick={toggleChannelCollapse}>
-          <button>O</button>
+          <i
+            className="c-icon p-channel_sidebar__section_heading_expand c-icon--caret-right c-icon--inherit c-icon--inline c-icon--caret-right"
+            data-qa="channel-section-collapse"
+            aria-hidden="true"
+          />
         </CollapseButton>
         <span>Direct Messages</span>
       </h2>
