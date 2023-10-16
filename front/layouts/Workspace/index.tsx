@@ -66,7 +66,25 @@ const Workspace: VFC = () => {
   );
   const [socket, disconnect] = useSocket(workspace);
 
-  useEffect(() => {});
+  useEffect(() => {
+    if (channelData && userData && socket) {
+      console.log(socket);
+      // 로그인했다고 서버에 알림
+      socket.emit('login', {
+        id: userData.id,
+        channels: channelData.map((v) => {
+          v.id;
+        }),
+      });
+    }
+  }, [socket, channelData, userData]);
+
+  // 연결 언제 끊어줄지 = 워크스페이스가 바뀔 때
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
 
   const onLogout = useCallback(() => {
     axios
